@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: AWS Wordpress example from scratch
+
+Parameters:
+  KeyName:
+    Description: Name of the KeyPair to use
+    Type: 'AWS::EC2::KeyPair::KeyName'
+  WebserverInstanceType:
+    Description: EC2 Instance Type for the webserver
+    Type: String
+    Default: t2.micro
+  MyIP:
+    Description: IP address to allow traffic from
+    Type: String
+    MinLength: 9
+    MaxLength: 18
+    Default: 0.0.0.0/0
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: CIDR range a.b.c.d/e
+  VpcCidrBlock:
+    Description: CIDR block to allocate for the VPC
+    Type: String
+    MinLength: 9
+    MaxLength: 18
+    Default: 0.0.0.0/0
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: CIDR range a.b.c.d/e
+
+Resources:
+  ClusterVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidrBlock
+      Tags:
+        - Key: Name
+          Value: Wordpress From Scratch
