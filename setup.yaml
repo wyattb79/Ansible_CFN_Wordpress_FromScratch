@@ -1,0 +1,22 @@
+---
+- name: setup AWS infrastructure
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  vars_files: local_vars
+  tasks:
+    - name: create cloudformation stack
+      cloudformation:
+        stack_name: "{{ stack_name }}"
+        region: "{{ region }}"
+        disable_rollback: true
+        state: present
+        template: "main-template.yaml"
+        template_parameters:
+          KeyName: "{{ keypair }}"
+          WebserverInstanceType: "{{ instance_type }}"
+          MyIP: "{{ my_ip }}"
+          VpcCidrBlock: "{{ vpc_cidr_block }}"
+        tags:
+          stack: "{{ stack_name }}"
+
