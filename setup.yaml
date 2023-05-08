@@ -10,13 +10,16 @@
         stack_name: "{{ stack_name }}"
         region: "{{ region }}"
         disable_rollback: true
-        state: present
+        state: "{{ stack_state | default('present') }}"
         template: "main-template.yaml"
         template_parameters:
           KeyName: "{{ keypair }}"
           WebserverInstanceType: "{{ instance_type }}"
           MyIP: "{{ my_ip }}"
           VpcCidrBlock: "{{ vpc_cidr_block }}"
+          Ec2CidrBlock: "{{ ec2_subnet_cidr }}"
+          Rds1SubnetCidr: "{{ rds1_subnet_cidr }}"
+          Rds2SubnetCidr: "{{ rds2_subnet_cidr }}"
         tags:
           stack: "{{ stack_name }}"
 

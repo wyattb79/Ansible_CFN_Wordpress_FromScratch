@@ -2,6 +2,9 @@
 keypair:
 instance_type:
 my_ip:
-vpc_cidr_block:
 stack_name:
 region:
+vpc_cidr_block:
+ec2_subnet_cidr:
+rds1_subnet_cidr:
+rds2_subnet_cidr:

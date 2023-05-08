@@ -25,12 +25,95 @@ Parameters:
     Default: 0.0.0.0/0
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
     ConstraintDescription: CIDR range a.b.c.d/e
+  Ec2CidrBlock:
+    Description: CIDR block to allocate for the ec2 subnet
+    Type: String
+    MinLength: 9
+    MaxLength: 18
+    Default: 0.0.0.0/0
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: CIDR range a.b.c.d/e
+  Rds1SubnetCidr:
+    Description: CIDR block to allocate for the rds 1st az subnet
+    Type: String
+    MinLength: 9
+    MaxLength: 18
+    Default: 0.0.0.0/0
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: CIDR range a.b.c.d/e
+  Rds2SubnetCidr:
+    Description: CIDR block to allocate for the rds 2nd az subnet
+    Type: String
+    MinLength: 9
+    MaxLength: 18
+    Default: 0.0.0.0/0
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: CIDR range a.b.c.d/e
 
 Resources:
-  ClusterVpc:
+  WordpressVpc:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !Ref VpcCidrBlock
+      Tags:
+        - Key: Name
+          Value: Wordpress From Scratch
+  Ec2Subnet:
+    Type: AWS::EC2::Subnet
+    DependsOn: WordpressVpc
+    Properties:
+      VpcId: !GetAtt WordpressVpc.VpcId
+      CidrBlock: !Ref Ec2CidrBlock
+      MapPublicIpOnLaunch: "true"
+      Tags:
+        - Key: Name
+          Value: Wordpress From Scratch
+  RDSSubnet1:
+    Type: AWS::EC2::Subnet
+    DependsOn: WordpressVpc
+    Properties:
+      VpcId: !GetAtt WordpressVpc.VpcId
+      CidrBlock: !Ref Rds1SubnetCidr
+      AvailabilityZone: us-east-1a
+      MapPublicIpOnLaunch: "false"
+      Tags:
+        - Key: Name
+          Value: Wordpress From Scratch
+  RDSSubnet2:
+    Type: AWS::EC2::Subnet
+    DependsOn: WordpressVpc
+    Properties:
+      VpcId: !GetAtt WordpressVpc.VpcId
+      CidrBlock: !Ref Rds2SubnetCidr
+      AvailabilityZone: us-east-1b
+      MapPublicIpOnLaunch: "false"
+      Tags:
+        - Key: Name
+          Value: Wordpress From Scratch
+  DbSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    DependsOn:
+      - RDSSubnet1
+      - RDSSubnet2
+    Properties:
+      DBSubnetGroupDescription: Wordpress From Scratch
+      SubnetIds:
+        - !GetAtt RDSSubnet1.SubnetId
+        - !GetAtt RDSSubnet2.SubnetId
+      Tags:
+        - Key: Name
+          Value: Wordpress From Scratch
+  LoginSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DependsOn: WordpressVpc
+    Properties:
+      GroupDescription: Allow ssh to instance
+      VpcId: !Ref WordpressVpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref MyIP
       Tags:
         - Key: Name
           Value: Wordpress From Scratch
