@@ -117,3 +117,17 @@ Resources:
       Tags:
         - Key: Name
           Value: Wordpress From Scratch
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DependsOn: LoginSecurityGroup
+    Properties:
+      GroupDescription: Allow traffic to DB from LoginSecurityGroup
+      VpcId: !Ref WordpressVpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: !Ref MyIP
+      Tags:
+        - Key: Name
+          Value: Wordpress From Scratch
