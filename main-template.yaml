@@ -131,3 +131,6 @@ Resources:
       Tags:
         - Key: Name
           Value: "{{ project_name }}"
+  WebServer:
+    Type: AWS::EC2::Instance
+
