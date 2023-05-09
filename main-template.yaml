@@ -57,7 +57,7 @@ Resources:
       CidrBlock: !Ref VpcCidrBlock
       Tags:
         - Key: Name
-          Value: Wordpress From Scratch
+          Value: "{{ project_name }}"
   Ec2Subnet:
     Type: AWS::EC2::Subnet
     DependsOn: WordpressVpc
@@ -67,7 +67,7 @@ Resources:
       MapPublicIpOnLaunch: "true"
       Tags:
         - Key: Name
-          Value: Wordpress From Scratch
+          Value: "{{ project_name }}"
   RDSSubnet1:
     Type: AWS::EC2::Subnet
     DependsOn: WordpressVpc
@@ -78,7 +78,7 @@ Resources:
       MapPublicIpOnLaunch: "false"
       Tags:
         - Key: Name
-          Value: Wordpress From Scratch
+          Value: "{{ project_name }}"
   RDSSubnet2:
     Type: AWS::EC2::Subnet
     DependsOn: WordpressVpc
@@ -89,20 +89,20 @@ Resources:
       MapPublicIpOnLaunch: "false"
       Tags:
         - Key: Name
-          Value: Wordpress From Scratch
+          Value: "{{ project_name }}"
   DbSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     DependsOn:
       - RDSSubnet1
       - RDSSubnet2
     Properties:
-      DBSubnetGroupDescription: Wordpress From Scratch
+      DBSubnetGroupDescription: "{{ project_name }}"
       SubnetIds:
         - !GetAtt RDSSubnet1.SubnetId
         - !GetAtt RDSSubnet2.SubnetId
       Tags:
         - Key: Name
-          Value: Wordpress From Scratch
+          Value: "{{ project_name }}"
   LoginSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     DependsOn: WordpressVpc
@@ -116,7 +116,7 @@ Resources:
           CidrIp: !Ref MyIP
       Tags:
         - Key: Name
-          Value: Wordpress From Scratch
+          Value: "{{ project_name }}"
   DBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     DependsOn: LoginSecurityGroup
@@ -130,4 +130,4 @@ Resources:
           CidrIp: !Ref MyIP
       Tags:
         - Key: Name
-          Value: Wordpress From Scratch
+          Value: "{{ project_name }}"

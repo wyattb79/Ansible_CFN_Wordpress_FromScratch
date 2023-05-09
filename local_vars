@@ -8,3 +8,4 @@ vpc_cidr_block:
 ec2_subnet_cidr:
 rds1_subnet_cidr:
 rds2_subnet_cidr:
+project_name:

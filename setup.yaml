@@ -20,6 +20,7 @@
           Ec2CidrBlock: "{{ ec2_subnet_cidr }}"
           Rds1SubnetCidr: "{{ rds1_subnet_cidr }}"
           Rds2SubnetCidr: "{{ rds2_subnet_cidr }}"
+          ProjectName: "{{ project_name }}"
         tags:
           stack: "{{ stack_name }}"
 
