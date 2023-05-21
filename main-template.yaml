@@ -169,3 +169,12 @@ Resources:
           Value: lb_cookie
         - Key: stickiness.lb_cookie.duration_seconds
           Value: 30
+  WordpressALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !GetAtt WordpressALBTargetGroup.TargetGroupArn
+      LoadBalancerArn: !Ref WordpressLoadBalancer
+      Port: 80
+      Protocol: HTTP
