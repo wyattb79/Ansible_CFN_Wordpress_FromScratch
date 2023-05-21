@@ -5,7 +5,8 @@ my_ip:
 stack_name:
 region:
 vpc_cidr_block:
-ec2_subnet_cidr:
+ec2_subnet_cidr1:
+ec2_subnet_cidr2:
 rds1_subnet_cidr:
 rds2_subnet_cidr:
 project_name:
