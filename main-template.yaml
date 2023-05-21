@@ -5,6 +5,9 @@ Parameters:
   KeyName:
     Description: Name of the KeyPair to use
     Type: 'AWS::EC2::KeyPair::KeyName'
+  ProjectName:
+    Description: Name of the project
+    Type: String
   WebserverInstanceType:
     Description: EC2 Instance Type for the webserver
     Type: String
@@ -55,9 +58,6 @@ Resources:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !Ref VpcCidrBlock
-      Tags:
-        - Key: Name
-          Value: "{{ project_name }}"
   Ec2Subnet:
     Type: AWS::EC2::Subnet
     DependsOn: WordpressVpc
@@ -65,9 +65,6 @@ Resources:
       VpcId: !GetAtt WordpressVpc.VpcId
       CidrBlock: !Ref Ec2CidrBlock
       MapPublicIpOnLaunch: "true"
-      Tags:
-        - Key: Name
-          Value: "{{ project_name }}"
   RDSSubnet1:
     Type: AWS::EC2::Subnet
     DependsOn: WordpressVpc
@@ -76,9 +73,6 @@ Resources:
       CidrBlock: !Ref Rds1SubnetCidr
       AvailabilityZone: us-east-1a
       MapPublicIpOnLaunch: "false"
-      Tags:
-        - Key: Name
-          Value: "{{ project_name }}"
   RDSSubnet2:
     Type: AWS::EC2::Subnet
     DependsOn: WordpressVpc
@@ -87,23 +81,17 @@ Resources:
       CidrBlock: !Ref Rds2SubnetCidr
       AvailabilityZone: us-east-1b
       MapPublicIpOnLaunch: "false"
-      Tags:
-        - Key: Name
-          Value: "{{ project_name }}"
   DbSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     DependsOn:
       - RDSSubnet1
       - RDSSubnet2
     Properties:
-      DBSubnetGroupDescription: "{{ project_name }}"
+      DBSubnetGroupDescription: "{{ ProjectName }}"
       SubnetIds:
         - !GetAtt RDSSubnet1.SubnetId
         - !GetAtt RDSSubnet2.SubnetId
-      Tags:
-        - Key: Name
-          Value: "{{ project_name }}"
-  LoginSecurityGroup:
+  WebserverSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     DependsOn: WordpressVpc
     Properties:
@@ -114,23 +102,23 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: !Ref MyIP
-      Tags:
-        - Key: Name
-          Value: "{{ project_name }}"
   DBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
-    DependsOn: LoginSecurityGroup
+    DependsOn: WebserverSecurityGroup
     Properties:
-      GroupDescription: Allow traffic to DB from LoginSecurityGroup
+      GroupDescription: Allow traffic to DB from WebserverSecurityGroup
       VpcId: !Ref WordpressVpc
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 3306
           ToPort: 3306
           CidrIp: !Ref MyIP
-      Tags:
-        - Key: Name
-          Value: "{{ project_name }}"
-  WebServer:
-    Type: AWS::EC2::Instance
-
+  DBSecurityGroupSelfRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    DependsOn: DBSecurityGroup
+    Properties:
+      GroupId: !GetAtt DBSecurityGroup.GroupId
+      IpProtocol: tcp
+      FromPort: 0
+      ToPort: 65535
+      SourceSecurityGroupId: !GetAtt DBSecurityGroup.GroupId
